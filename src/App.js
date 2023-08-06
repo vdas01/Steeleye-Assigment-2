@@ -1,7 +1,7 @@
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './App.css';
-import HighlightHtmlContent from './func';
+
 
 function App() {
   const [modifiedHtml, setmodifiedHtml] = useState([]);
@@ -14,10 +14,33 @@ function App() {
     { start: 5, end: 7 },
     { start: 9, end: 15 }
   ];
+
+
+  function highlightHtmlContent (setmodifiedHtml,plainText,htmlContent,plainTextPositions)  {
+    let ans = [];    
+    let currPos = 0;
+
+    plainTextPositions.forEach(pos => {
+      const word = plainText.slice(pos.start, pos.end + 1);
+      const startId = htmlContent.indexOf(word, currPos);
+      const endId = startId + word.length;
+      ans.push(htmlContent.slice(currPos, startId));
+      ans.push('<mark>' + word + '</mark>');
+      currPos = endId;
+    });
+
+    ans.push(htmlContent.slice(currPos));
+    return ans.join('');
+  }
+
+  useEffect(() => {
+    
+    setmodifiedHtml(highlightHtmlContent(setmodifiedHtml,plainText,htmlContent,plainTextPositions));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <div className="App">
-  
-         <HighlightHtmlContent htmlContent={htmlContent} plainText={plainText} plainTextPositions={plainTextPositions} setmodifiedHtml={setmodifiedHtml}/>
          <div dangerouslySetInnerHTML={{ __html: modifiedHtml }} />
     </div>
   );
